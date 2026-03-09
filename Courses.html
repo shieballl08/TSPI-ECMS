@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Catalog - ECMS Course Catalog</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <!-- Google Fonts: Inter + Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+            background: #f8fafc;
+            color: #1e293b;
+        }
+
+        :root {
+            --primary: #0A2647;
+            --primary-dark: #071f36;
+            --primary-light: #1d4b72;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-600: #475569;
+            --gray-800: #1e293b;
+        }
+
+        /* Navigation - SIMPLIFIED */
+        .nav-link { 
+            color: rgba(255,255,255,0.85); 
+            font-weight: 500; 
+            font-size: 0.9rem;
+            transition: all 0.2s; 
+            cursor: pointer;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            white-space: nowrap;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .nav-link:hover { 
+            color: white; 
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Right side icons */
+        .nav-icon {
+            color: rgba(255,255,255,0.7);
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .nav-icon:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+
+        /* Course Cards */
+        .course-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 1rem;
+            transition: all 0.2s;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .course-card:hover {
+            border-color: var(--primary-light);
+            box-shadow: 0 10px 15px -3px rgba(10,38,71,0.1);
+            transform: translateY(-2px);
+        }
+
+        .course-image {
+            position: relative;
+            height: 160px;
+            background-color: var(--primary);
+            overflow: hidden;
+        }
+        .course-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .course-card:hover .course-image img {
+            transform: scale(1.05);
+        }
+
+        .course-level {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(4px);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--primary);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .category-badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            background: var(--gray-100);
+            color: var(--gray-600);
+        }
+
+        .duration-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.7rem;
+            color: var(--gray-600);
+        }
+
+        /* Filter Chips */
+        .filter-chip {
+            cursor: pointer;
+            border: 1px solid var(--gray-200);
+            background: white;
+            color: var(--gray-600);
+            font-size: 0.8125rem;
+            font-weight: 500;
+            padding: 0.375rem 1rem;
+            border-radius: 9999px;
+            transition: all 0.2s;
+        }
+        .filter-chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .filter-chip.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        /* Level Filters */
+        .level-filter {
+            cursor: pointer;
+            padding: 0.25rem 0;
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .level-filter:hover {
+            color: var(--primary);
+        }
+        .level-filter.active {
+            color: var(--primary);
+            font-weight: 500;
+        }
+        .level-filter .count {
+            color: var(--gray-400);
+            font-size: 0.8rem;
+            margin-left: auto;
+        }
+
+        /* Search Input */
+        .search-input {
+            border: 1px solid var(--gray-200);
+            border-radius: 0.5rem;
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            width: 100%;
+            font-size: 0.9rem;
+            background: white;
+        }
+        .search-input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(10,38,71,0.1);
+        }
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+        }
+        .status-badge.enrolled { background: #e8f0fc; color: var(--primary); }
+        .status-badge.completed { background: #e3f7e3; color: #0f7b0f; }
+        .status-badge.not-started { background: #f1f3f4; color: #5f6368; }
+
+        /* Modal */
+        .modal-overlay {
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+        }
+        #courseModal { animation: slideUp 0.2s ease-out; }
+        @keyframes slideUp { 
+            from { transform: translateY(20px); opacity: 0; } 
+            to { transform: translateY(0); opacity: 1; } 
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--gray-600);
+        }
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* Hide scrollbar */
+        .nav-container {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .nav-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Section scroll margin */
+        section {
+            scroll-margin-top: 80px;
+        }
+
+        /* Notification badge */
+        .notification-badge { 
+            background: #d93025; 
+            color: white; 
+            font-size: 0.625rem; 
+            font-weight: 600;
+            padding: 0.15rem 0.4rem; 
+            border-radius: 12px; 
+            position: absolute; 
+            top: -2px; 
+            right: -2px; 
+        }
+
+        .signout-modal-icon {
+            width: 64px; 
+            height: 64px;
+            background: #fce8e8;
+            border-radius: 50%;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        /* Sort Dropdown Animation */
+        #sortDropdown {
+            transition: all 0.2s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+<div class="min-h-screen flex flex-col">
+
+    <!-- ========== HEADER - SIMPLIFIED ========== -->
+    <header class="bg-[#0A2647] sticky top-0 z-50 border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Left: ECMS with full name -->
+                <div class="flex flex-col leading-tight min-w-[180px]">
+                    <span class="text-white font-bold text-2xl tracking-tight" style="font-family: 'Outfit', sans-serif;">ECMS</span>
+                    <span class="text-white/70 text-xs font-medium tracking-wide">Employee Competency Management System</span>
+                </div>
+
+                <!-- Center: Navigation - SIMPLIFIED -->
+                <div class="flex-1 flex justify-center overflow-x-auto nav-container">
+                    <div class="hidden md:flex items-center space-x-1">
+                        <a href="user_dashboard.html" class="nav-link">Dashboard</a>
+                        <a href="courses.html" class="nav-link">Courses</a>
+                        <a href="assessments.html" class="nav-link">Assessments</a>
+                        <a href="resources.html" class="nav-link">Resources</a>
+                        <a href="user_dashboard.html#myLearningSection" class="nav-link" onclick="scrollToSection('myLearningSection')">My Learning</a>
+                    </div>
+                </div>
+
+                <!-- Right: Profile Section -->
+                <div class="flex items-center space-x-1 min-w-[180px] justify-end">
+                    <!-- Search -->
+                    <span class="nav-icon" onclick="showPopup('search')">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </span>
+
+                    <!-- Notifications -->
+                    <div class="relative">
+                        <button onclick="showPopup('notifications')" class="nav-icon relative">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                            <span class="notification-badge" id="notificationBadge">3</span>
+                        </button>
+                    </div>
+
+                    <!-- Profile -->
+                    <div class="relative" id="profileContainer">
+                        <button onclick="toggleProfileDropdown()" class="flex items-center space-x-2 nav-icon">
+                            <span class="hidden lg:block text-sm text-white/80 font-medium">Joanne S.</span>
+                            <div class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-all">
+                                <span class="text-white font-medium text-sm">JS</span>
+                            </div>
+                        </button>
+
+                        <!-- Profile Dropdown -->
+                        <div id="profileDropdown" class="absolute right-0 top-12 mt-2 w-64 bg-white rounded-lg shadow-lg py-2 z-[10001] border border-gray-200 hidden">
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <p class="text-sm font-semibold text-gray-800">Joanne Shiela Balahan</p>
+                                <p class="text-xs text-gray-500">joanne.s@tspi.com.ph</p>
+                            </div>
+                            
+                            <!-- STATUS SECTION -->
+                            <div class="px-4 py-2 border-b border-gray-100">
+                                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Status</p>
+                                <div class="status-option flex items-center px-3 py-2 hover:bg-gray-50 rounded-md cursor-pointer" onclick="setStatus('online')">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                                    <span class="text-sm text-gray-700">Online</span>
+                                    <span class="ml-auto text-xs text-green-600 status-check hidden" id="onlineCheck">✓</span>
+                                </div>
+                                <div class="status-option flex items-center px-3 py-2 hover:bg-gray-50 rounded-md cursor-pointer" onclick="setStatus('silent')">
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full mr-3"></div>
+                                    <span class="text-sm text-gray-700">Silent</span>
+                                    <span class="ml-auto text-xs text-gray-600 status-check hidden" id="silentCheck">✓</span>
+                                </div>
+                                <div class="status-option flex items-center px-3 py-2 hover:bg-gray-50 rounded-md cursor-pointer" onclick="setStatus('dnd')">
+                                    <div class="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
+                                    <span class="text-sm text-gray-700">Do Not Disturb</span>
+                                    <span class="ml-auto text-xs text-red-600 status-check hidden" id="dndCheck">✓</span>
+                                </div>
+                                <div class="status-option flex items-center px-3 py-2 hover:bg-gray-50 rounded-md cursor-pointer" onclick="setStatus('meeting')">
+                                    <svg class="w-4 h-4 text-yellow-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                    <span class="text-sm text-gray-700">Meeting Mode</span>
+                                    <span class="ml-auto text-xs text-yellow-600 status-check hidden" id="meetingCheck">✓</span>
+                                </div>
+                            </div>
+                            
+                            <!-- ACCOUNT SECTION -->
+                            <div class="px-4 py-2">
+                                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Account</p>
+                                <div onclick="showPopup('profile')" class="flex items-center px-3 py-2 hover:bg-gray-50 rounded-md cursor-pointer">
+                                    <svg class="w-4 h-4 text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    <span class="text-sm text-gray-700">Profile Settings</span>
+                                </div>
+                                <div onclick="showPopup('preferences')" class="flex items-center px-3 py-2 hover:bg-gray-50 rounded-md cursor-pointer">
+                                    <svg class="w-4 h-4 text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    <span class="text-sm text-gray-700">Preferences</span>
+                                </div>
+                                <div onclick="showPopup('notifications')" class="flex items-center px-3 py-2 hover:bg-gray-50 rounded-md cursor-pointer">
+                                    <svg class="w-4 h-4 text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                    </svg>
+                                    <span class="text-sm text-gray-700">Notifications</span>
+                                </div>
+                                <div class="border-t border-gray-100 my-2"></div>
+                                <div onclick="showPopup('signout')" class="flex items-center px-3 py-2 hover:bg-red-50 rounded-md cursor-pointer">
+                                    <svg class="w-4 h-4 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                    <span class="text-sm text-red-600 font-medium">Sign Out</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Menu -->
+                    <button onclick="showPopup('mobile')" class="md:hidden nav-icon ml-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- POPUP OVERLAY -->
+    <div id="popupOverlay" class="fixed inset-0 bg-black bg-opacity-30 z-[9999]" style="display:none;">
+        <div class="flex items-center justify-center min-h-full p-4">
+            <div id="popupContent" class="bg-white rounded-lg shadow-xl w-full max-w-md">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 id="popupTitle" class="text-lg font-semibold text-gray-800"></h3>
+                        <button onclick="hidePopup()" class="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full p-1">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="popupBody" class="text-gray-600 text-sm"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== COURSE CATALOG MAIN CONTENT ========== -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb mb-6">
+            <a href="user_dashboard.html">Dashboard</a>
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+            <span class="text-gray-800 font-medium">Course Catalog</span>
+        </div>
+
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-[#0A2647] mb-2" style="font-family: 'Outfit', sans-serif;">ECMS Course Catalog</h1>
+            <p class="text-gray-600">Browse all available courses for your training and certification journey.</p>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-8">
+            <!-- Sidebar Filters -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg border border-gray-200 p-5 sticky top-24">
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center">
+                        <svg class="w-4 h-4 mr-2 text-[#0A2647]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                        </svg>
+                        Filter Courses
+                    </h3>
+
+                    <!-- Category Filter -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-semibold text-gray-700 mb-3">Category</h4>
+                        <div class="space-y-2">
+                            <div class="level-filter active" onclick="filterByCategory('all')">
+                                <span>All Courses</span>
+                                <span class="count" id="totalCount">8</span>
+                            </div>
+                            <div class="level-filter" onclick="filterByCategory('ccna')">
+                                <span>CCNA</span>
+                                <span class="count" id="ccnaCount">2</span>
+                            </div>
+                            <div class="level-filter" onclick="filterByCategory('network-plus')">
+                                <span>Network+</span>
+                                <span class="count" id="networkPlusCount">1</span>
+                            </div>
+                            <div class="level-filter" onclick="filterByCategory('security')">
+                                <span>Security</span>
+                                <span class="count" id="securityCount">1</span>
+                            </div>
+                            <div class="level-filter" onclick="filterByCategory('wireless')">
+                                <span>Wireless</span>
+                                <span class="count" id="wirelessCount">1</span>
+                            </div>
+                            <div class="level-filter" onclick="filterByCategory('tcpip')">
+                                <span>TCP/IP</span>
+                                <span class="count" id="tcpipCount">1</span>
+                            </div>
+                            <div class="level-filter" onclick="filterByCategory('ccnp')">
+                                <span>CCNP</span>
+                                <span class="count" id="ccnpCount">1</span>
+                            </div>
+                            <div class="level-filter" onclick="filterByCategory('cyberops')">
+                                <span>CyberOps</span>
+                                <span class="count" id="cyberopsCount">1</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Level Filter -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-semibold text-gray-700 mb-3">Level</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" class="rounded border-gray-300 text-[#0A2647]" onchange="filterByLevel()" id="levelBeginner">
+                                <span class="text-sm text-gray-600">Beginner</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" class="rounded border-gray-300 text-[#0A2647]" onchange="filterByLevel()" id="levelIntermediate">
+                                <span class="text-sm text-gray-600">Intermediate</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" class="rounded border-gray-300 text-[#0A2647]" onchange="filterByLevel()" id="levelAdvanced">
+                                <span class="text-sm text-gray-600">Advanced</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Clear Filters -->
+                    <button onclick="clearFilters()" class="mt-6 w-full text-sm text-[#0A2647] font-medium hover:underline">
+                        Clear all filters
+                    </button>
+                </div>
+            </div>
+
+            <!-- Course Grid -->
+            <div class="lg:col-span-3">
+                <!-- Search Bar -->
+                <div class="relative mb-6">
+                    <div class="search-icon">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search courses..." onkeyup="searchCourses()">
+                </div>
+
+                <!-- Results Count with Custom Dropdown - FIXED -->
+                <div class="flex justify-between items-center mb-4">
+                    <p class="text-sm text-gray-500" id="resultsCount">Showing <span class="font-medium text-gray-700">8</span> courses</p>
+
+                    <!-- Custom Sort Dropdown - FIXED -->
+                    <div class="relative" id="sortContainer">
+                        <button onclick="toggleSortDropdown()" class="flex items-center gap-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg px-3 py-2 hover:border-[#0A2647] hover:text-[#0A2647] transition-all duration-200 group">
+                            <svg class="w-4 h-4 text-gray-400 group-hover:text-[#0A2647] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/>
+                            </svg>
+                            <span id="sortLabel">Most Popular</span>
+                            <svg class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200" id="sortArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+
+                        <div id="sortDropdown" class="hidden absolute right-0 mt-1 w-44 bg-white rounded-lg border border-gray-200 shadow-lg overflow-hidden z-50">
+                            <div class="py-1">
+                                <button onclick="selectSort('popular', 'Most Popular')" class="sort-option w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#0A2647] transition-colors text-left">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#0A2647] transition-opacity" id="dot-popular" style="opacity:1"></span>
+                                    Most Popular
+                                </button>
+                                <button onclick="selectSort('name-asc', 'Name A–Z')" class="sort-option w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#0A2647] transition-colors text-left">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#0A2647] transition-opacity" id="dot-name-asc" style="opacity:0"></span>
+                                    Name A–Z
+                                </button>
+                                <button onclick="selectSort('name-desc', 'Name Z–A')" class="sort-option w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#0A2647] transition-colors text-left">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#0A2647] transition-opacity" id="dot-name-desc" style="opacity:0"></span>
+                                    Name Z–A
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course Grid - ALL 8 COURSES -->
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5" id="courseGrid">
+                    <!-- CCNA 200-301 -->
+                    <div class="course-card" data-category="ccna" data-level="intermediate" data-duration="30" data-status="enrolled" data-name="CCNA 200-301" data-popularity="95">
+                        <div class="course-image">
+                            <img src="TSPI%20PICTURES/ccna.png" alt="CCNA Course">
+                            <span class="course-level">Intermediate</span>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="category-badge">CCNA</span>
+                                <span class="duration-badge">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    30 hours
+                                </span>
+                            </div>
+                            <h3 class="font-semibold text-gray-800 mb-1">CCNA 200-301</h3>
+                            <p class="text-xs text-gray-500 mb-3 line-clamp-2">Complete ECMS CCNA certification training covering networking fundamentals, routing, switching, and automation.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="status-badge enrolled">Enrolled</span>
+                                <button onclick="showCourseDetails('CCNA 200-301', 'ccna')" class="text-[#0A2647] font-medium text-xs hover:underline">View Details →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Network+ -->
+                    <div class="course-card" data-category="network-plus" data-level="beginner" data-duration="25" data-status="not-started" data-name="CompTIA Network+" data-popularity="98">
+                        <div class="course-image">
+                            <img src="TSPI%20PICTURES/network-plus.png" alt="Network+ Course">
+                            <span class="course-level">Beginner</span>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="category-badge">Network+</span>
+                                <span class="duration-badge">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    25 hours
+                                </span>
+                            </div>
+                            <h3 class="font-semibold text-gray-800 mb-1">CompTIA Network+</h3>
+                            <p class="text-xs text-gray-500 mb-3 line-clamp-2">Foundation networking course covering protocols, topologies, and network implementation.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="status-badge not-started">Not Started</span>
+                                <button onclick="showCourseDetails('CompTIA Network+', 'network-plus')" class="text-[#0A2647] font-medium text-xs hover:underline">View Details →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TCP/IP Fundamentals -->
+                    <div class="course-card" data-category="tcpip" data-level="beginner" data-duration="15" data-status="completed" data-name="TCP/IP Fundamentals" data-popularity="92">
+                        <div class="course-image">
+                            <img src="TSPI%20PICTURES/tcp-ip.png" alt="TCP/IP Course">
+                            <span class="course-level">Beginner</span>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="category-badge">TCP/IP</span>
+                                <span class="duration-badge">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    15 hours
+                                </span>
+                            </div>
+                            <h3 class="font-semibold text-gray-800 mb-1">TCP/IP Fundamentals</h3>
+                            <p class="text-xs text-gray-500 mb-3 line-clamp-2">Deep dive into TCP/IP protocol suite, addressing, subnetting, and network layers.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="status-badge completed">Completed</span>
+                                <button onclick="showCourseDetails('TCP/IP Fundamentals', 'tcpip')" class="text-[#0A2647] font-medium text-xs hover:underline">View Details →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Network Security -->
+                    <div class="course-card" data-category="security" data-level="intermediate" data-duration="28" data-status="not-started" data-name="Network Security" data-popularity="94">
+                        <div class="course-image">
+                            <img src="TSPI%20PICTURES/network-security.png" alt="Network Security">
+                            <span class="course-level">Intermediate</span>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="category-badge">Security</span>
+                                <span class="duration-badge">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    28 hours
+                                </span>
+                            </div>
+                            <h3 class="font-semibold text-gray-800 mb-1">Network Security</h3>
+                            <p class="text-xs text-gray-500 mb-3 line-clamp-2">Essential network security concepts including firewalls, VPNs, IDS/IPS, and threat prevention.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="status-badge not-started">Not Started</span>
+                                <button onclick="showCourseDetails('Network Security', 'security')" class="text-[#0A2647] font-medium text-xs hover:underline">View Details →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Routing & Switching -->
+                    <div class="course-card" data-category="ccna" data-level="advanced" data-duration="35" data-status="enrolled" data-name="Routing & Switching" data-popularity="96">
+                        <div class="course-image">
+                            <img src="TSPI%20PICTURES/routing.png" alt="Routing & Switching">
+                            <span class="course-level">Advanced</span>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="category-badge">CCNA</span>
+                                <span class="duration-badge">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    35 hours
+                                </span>
+                            </div>
+                            <h3 class="font-semibold text-gray-800 mb-1">Routing & Switching</h3>
+                            <p class="text-xs text-gray-500 mb-3 line-clamp-2">Advanced routing protocols, switching concepts, VLANs, and network design.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="status-badge enrolled">Enrolled</span>
+                                <button onclick="showCourseDetails('Routing & Switching', 'ccna')" class="text-[#0A2647] font-medium text-xs hover:underline">View Details →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Wireless Networking -->
+                    <div class="course-card" data-category="wireless" data-level="intermediate" data-duration="22" data-status="not-started" data-name="Wireless Networking" data-popularity="89">
+                        <div class="course-image">
+                            <img src="TSPI%20PICTURES/wireless.png" alt="Wireless Networks">
+                            <span class="course-level">Intermediate</span>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="category-badge">Wireless</span>
+                                <span class="duration-badge">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    22 hours
+                                </span>
+                            </div>
+                            <h3 class="font-semibold text-gray-800 mb-1">Wireless Networking</h3>
+                            <p class="text-xs text-gray-500 mb-3 line-clamp-2">Complete guide to wireless networks, WiFi standards, and access point configuration.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="status-badge not-started">Not Started</span>
+                                <button onclick="showCourseDetails('Wireless Networking', 'wireless')" class="text-[#0A2647] font-medium text-xs hover:underline">View Details →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CCNP Enterprise -->
+                    <div class="course-card" data-category="ccnp" data-level="advanced" data-duration="45" data-status="not-started" data-name="CCNP Enterprise" data-popularity="88">
+                        <div class="course-image">
+                            <img src="TSPI%20PICTURES/ccnp-enterprise.png" alt="CCNP Enterprise">
+                            <span class="course-level">Advanced</span>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="category-badge">CCNP</span>
+                                <span class="duration-badge">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    45 hours
+                                </span>
+                            </div>
+                            <h3 class="font-semibold text-gray-800 mb-1">CCNP Enterprise</h3>
+                            <p class="text-xs text-gray-500 mb-3 line-clamp-2">Advanced enterprise networking including SD-WAN, automation, and network design.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="status-badge not-started">Not Started</span>
+                                <button onclick="showCourseDetails('CCNP Enterprise', 'ccnp')" class="text-[#0A2647] font-medium text-xs hover:underline">View Details →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CyberOps Associate -->
+                    <div class="course-card" data-category="cyberops" data-level="intermediate" data-duration="32" data-status="not-started" data-name="CyberOps Associate" data-popularity="91">
+                        <div class="course-image">
+                            <img src="TSPI%20PICTURES/cyberops.png" alt="CyberOps">
+                            <span class="course-level">Intermediate</span>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="category-badge">CyberOps</span>
+                                <span class="duration-badge">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    32 hours
+                                </span>
+                            </div>
+                            <h3 class="font-semibold text-gray-800 mb-1">CyberOps Associate</h3>
+                            <p class="text-xs text-gray-500 mb-3 line-clamp-2">Security operations, monitoring, incident response, and SOC fundamentals.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="status-badge not-started">Not Started</span>
+                                <button onclick="showCourseDetails('CyberOps Associate', 'cyberops')" class="text-[#0A2647] font-medium text-xs hover:underline">View Details →</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommended Path -->
+        <section class="mt-12 bg-white rounded-lg border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-[#0A2647] mb-4 flex items-center" style="font-family: 'Outfit', sans-serif;">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Recommended Learning Path for New Hires
+            </h2>
+            
+            <!-- Three Column Layout -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Foundation -->
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <div class="w-8 h-8 rounded-full bg-[#0A2647] text-white flex items-center justify-center font-bold text-sm mb-3">1</div>
+                    <h3 class="font-semibold text-gray-800 mb-1">Foundation</h3>
+                    <p class="text-xs text-gray-500 mb-2">Network+, TCP/IP Fundamentals</p>
+                    <div class="text-xs text-[#0A2647] font-medium">8 weeks · Beginner</div>
+                </div>
+                
+                <!-- Professional -->
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <div class="w-8 h-8 rounded-full bg-[#0A2647] text-white flex items-center justify-center font-bold text-sm mb-3">2</div>
+                    <h3 class="font-semibold text-gray-800 mb-1">Professional</h3>
+                    <p class="text-xs text-gray-500 mb-2">CCNA, Network Security</p>
+                    <div class="text-xs text-[#0A2647] font-medium">12 weeks · Intermediate</div>
+                </div>
+                
+                <!-- Expert -->
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <div class="w-8 h-8 rounded-full bg-[#0A2647] text-white flex items-center justify-center font-bold text-sm mb-3">3</div>
+                    <h3 class="font-semibold text-gray-800 mb-1">Expert</h3>
+                    <p class="text-xs text-gray-500 mb-2">CCNP, CyberOps</p>
+                    <div class="text-xs text-[#0A2647] font-medium">16 weeks · Advanced</div>
+                </div>
+            </div>
+            
+            <!-- View Full Path Link -->
+            <div class="mt-4 text-center">
+                <a href="learning-path.html" class="inline-flex items-center text-[#0A2647] font-medium text-sm hover:underline">
+                    View Full Learning Path
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- ========== COURSE DETAILS MODAL ========== -->
+    <div id="courseModalOverlay" class="fixed inset-0 modal-overlay z-[9998]" style="display: none;">
+        <div class="flex items-center justify-center min-h-full p-4">
+            <div id="courseModal" class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 id="modalCourseTitle" class="text-xl font-bold text-[#0A2647]" style="font-family: 'Outfit', sans-serif;">Course Details</h3>
+                        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full p-1">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div id="modalCourseImage" class="w-full h-48 bg-gray-200 rounded-lg mb-4 bg-cover bg-center"></div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <span id="modalCategory" class="category-badge"></span>
+                            <span id="modalLevel" class="text-xs bg-[#e8f0fc] text-[#0A2647] px-2 py-1 rounded-full"></span>
+                            <span id="modalDuration" class="text-xs text-gray-500 flex items-center">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span id="modalHours"></span> hours
+                            </span>
+                        </div>
+
+                        <p id="modalDescription" class="text-gray-600 text-sm"></p>
+
+                        <div class="border-t border-gray-200 pt-4">
+                            <h4 class="font-semibold text-gray-800 mb-2">What you'll learn:</h4>
+                            <ul id="modalObjectives" class="space-y-2 text-sm text-gray-600"></ul>
+                        </div>
+
+                        <div class="border-t border-gray-200 pt-4">
+                            <h4 class="font-semibold text-gray-800 mb-2">Course includes:</h4>
+                            <div id="modalIncludes" class="grid grid-cols-2 gap-2 text-sm text-gray-600"></div>
+                        </div>
+
+                        <div class="flex gap-3 pt-4">
+                            <button onclick="enrollCourse()" class="flex-1 bg-[#0A2647] text-white py-3 rounded-lg text-sm font-semibold hover:bg-[#1d4b72] transition-colors">
+                                Enroll Now
+                            </button>
+                            <button onclick="closeModal()" class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-auto py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-xs text-gray-500 font-medium">© 2026 TSPI · Employee Competency Management System</p>
+        </div>
+    </footer>
+</div>
+
+<script>
+// =============================================
+// PROFILE DROPDOWN FUNCTIONS
+// =============================================
+
+// Toggle profile dropdown
+function toggleProfileDropdown() {
+    const dropdown = document.getElementById('profileDropdown');
+    dropdown.classList.toggle('hidden');
+}
+
+// Set status
+function setStatus(status) {
+    // Hide all checks
+    document.querySelectorAll('.status-check').forEach(check => {
+        check.classList.add('hidden');
+    });
+    
+    // Show selected check
+    const checkId = status + 'Check';
+    document.getElementById(checkId).classList.remove('hidden');
+    
+    // Update status dot and text
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    
+    const statusConfig = {
+        online: { dotColor: 'bg-green-400', text: 'Online' },
+        silent: { dotColor: 'bg-gray-400', text: 'Silent' },
+        dnd: { dotColor: 'bg-red-400', text: 'Do Not Disturb' },
+        meeting: { dotColor: 'bg-yellow-400', text: 'Meeting Mode' }
+    };
+    
+    const cfg = statusConfig[status];
+    if (cfg) {
+        statusDot.className = 'w-2 h-2 ' + cfg.dotColor + ' rounded-full mr-2';
+        statusText.textContent = cfg.text;
+    }
+    
+    // Close dropdown after selection
+    document.getElementById('profileDropdown').classList.add('hidden');
+}
+
+// =============================================
+// SORT DROPDOWN FUNCTIONS - FIXED
+// =============================================
+
+// Toggle sort dropdown
+function toggleSortDropdown() {
+    const dropdown = document.getElementById('sortDropdown');
+    dropdown.classList.toggle('hidden');
+}
+
+// Select sort option
+function selectSort(value, label) {
+    document.getElementById('sortLabel').textContent = label;
+    document.getElementById('sortDropdown').classList.add('hidden');
+    
+    // Update dots
+    document.getElementById('dot-popular').style.opacity = value === 'popular' ? '1' : '0';
+    document.getElementById('dot-name-asc').style.opacity = value === 'name-asc' ? '1' : '0';
+    document.getElementById('dot-name-desc').style.opacity = value === 'name-desc' ? '1' : '0';
+    
+    sortCourses(value);
+}
+
+// =============================================
+// CLOSE DROPDOWNS WHEN CLICKING OUTSIDE
+// =============================================
+document.addEventListener('click', function(e) {
+    // Close profile dropdown
+    const profileContainer = document.getElementById('profileContainer');
+    const profileDropdown = document.getElementById('profileDropdown');
+    
+    if (profileContainer && !profileContainer.contains(e.target)) {
+        profileDropdown.classList.add('hidden');
+    }
+    
+    // Close sort dropdown
+    const sortContainer = document.getElementById('sortContainer');
+    const sortDropdown = document.getElementById('sortDropdown');
+    
+    if (sortContainer && !sortContainer.contains(e.target)) {
+        sortDropdown?.classList.add('hidden');
+    }
+});
+
+// =============================================
+// COURSE CATALOG JAVASCRIPT
+// =============================================
+
+// Course details database
+const courseDetails = {
+    'ccna': {
+        category: 'CCNA',
+        level: 'Intermediate',
+        hours: 30,
+        description: 'Complete ECMS CCNA certification training covering networking fundamentals, routing, switching, and automation.',
+        objectives: [
+            'Network fundamentals and OSI model (20%)',
+            'Routing protocols: OSPF, EIGRP (25%)',
+            'VLANs, trunking, and STP (20%)',
+            'Wireless and security fundamentals (15%)',
+            'Automation and programmability (20%)'
+        ],
+        includes: [
+            '52 video lessons',
+            '18 labs',
+            '6 practice exams',
+            'Boson NetSim'
+        ]
+    },
+    'network-plus': {
+        category: 'Network+',
+        level: 'Beginner',
+        hours: 25,
+        description: 'Foundation networking course covering protocols, topologies, and network implementation for CompTIA certification.',
+        objectives: [
+            'Networking concepts and protocols (22%)',
+            'Infrastructure and cabling (18%)',
+            'Network operations and QoS (20%)',
+            'Network security (19%)',
+            'Troubleshooting and tools (21%)'
+        ],
+        includes: [
+            '48 video lessons',
+            '15 labs',
+            '5 practice exams',
+            'Study guide PDF'
+        ]
+    },
+    'tcpip': {
+        category: 'TCP/IP',
+        level: 'Beginner',
+        hours: 15,
+        description: 'Deep dive into TCP/IP protocol suite, addressing, subnetting, and network layers.',
+        objectives: [
+            'IPv4 addressing and subnetting (30%)',
+            'IPv6 fundamentals (20%)',
+            'ARP, ICMP, and DHCP (15%)',
+            'TCP and UDP protocols (20%)',
+            'Packet analysis with Wireshark (15%)'
+        ],
+        includes: [
+            '32 video lessons',
+            '10 labs',
+            '3 practice exams',
+            'Subnet calculator tool'
+        ]
+    },
+    'security': {
+        category: 'Security',
+        level: 'Intermediate',
+        hours: 28,
+        description: 'Essential network security concepts including firewalls, VPNs, IDS/IPS, and threat prevention.',
+        objectives: [
+            'Firewall configuration (ASA, PFSense) (25%)',
+            'VPN technologies (IPsec, SSL) (20%)',
+            'IDS/IPS implementation (15%)',
+            'Network access control (NAC) (20%)',
+            'Security policies and best practices (20%)'
+        ],
+        includes: [
+            '45 video lessons',
+            '16 labs',
+            '4 practice exams',
+            'Security tools VM'
+        ]
+    },
+    'wireless': {
+        category: 'Wireless',
+        level: 'Intermediate',
+        hours: 22,
+        description: 'Complete guide to wireless networks, WiFi standards, and access point configuration.',
+        objectives: [
+            '802.11 standards (WiFi 5/6/6E) (25%)',
+            'Access point configuration (20%)',
+            'Wireless security (WPA3, 802.1X) (20%)',
+            'Site surveys and RF design (15%)',
+            'Troubleshooting wireless issues (20%)'
+        ],
+        includes: [
+            '38 video lessons',
+            '12 labs',
+            '3 practice exams',
+            'WiFi analyzer software'
+        ]
+    },
+    'ccnp': {
+        category: 'CCNP',
+        level: 'Advanced',
+        hours: 45,
+        description: 'Advanced enterprise networking including SD-WAN, automation, and network design for senior engineers.',
+        objectives: [
+            'SD-WAN architecture and deployment (25%)',
+            'Network automation with Python/Ansible (20%)',
+            'Advanced BGP and OSPF (20%)',
+            'MPLS and VPN technologies (15%)',
+            'Network design and architecture (20%)'
+        ],
+        includes: [
+            '68 video lessons',
+            '24 labs',
+            '8 practice exams',
+            'EVE-NG labs'
+        ]
+    },
+    'cyberops': {
+        category: 'CyberOps',
+        level: 'Intermediate',
+        hours: 32,
+        description: 'Security operations, monitoring, incident response, and SOC fundamentals for cybersecurity professionals.',
+        objectives: [
+            'Security monitoring and data analysis (25%)',
+            'Incident response procedures (20%)',
+            'Digital forensics fundamentals (15%)',
+            'SIEM tools and log analysis (20%)',
+            'Threat intelligence and hunting (20%)'
+        ],
+        includes: [
+            '48 video lessons',
+            '16 labs',
+            '5 practice exams',
+            'Splunk fundamentals'
+        ]
+    }
+};
+
+// Filter variables
+let currentCategory = 'all';
+let currentLevels = [];
+let searchQuery = '';
+
+// Filter functions
+function filterByCategory(category) {
+    currentCategory = category;
+    document.querySelectorAll('.level-filter').forEach(el => {
+        el.classList.remove('active');
+    });
+    event.currentTarget.classList.add('active');
+    applyFilters();
+}
+
+function filterByLevel() {
+    currentLevels = [];
+    if (document.getElementById('levelBeginner')?.checked) currentLevels.push('beginner');
+    if (document.getElementById('levelIntermediate')?.checked) currentLevels.push('intermediate');
+    if (document.getElementById('levelAdvanced')?.checked) currentLevels.push('advanced');
+    applyFilters();
+}
+
+function searchCourses() {
+    searchQuery = document.getElementById('searchInput').value.toLowerCase();
+    applyFilters();
+}
+
+function applyFilters() {
+    const courses = document.querySelectorAll('.course-card');
+    let visibleCount = 0;
+    
+    courses.forEach(course => {
+        let visible = true;
+        
+        if (currentCategory !== 'all' && course.dataset.category !== currentCategory) visible = false;
+        if (currentLevels.length > 0 && !currentLevels.includes(course.dataset.level)) visible = false;
+        if (searchQuery && !course.dataset.name.toLowerCase().includes(searchQuery)) visible = false;
+        
+        course.style.display = visible ? 'block' : 'none';
+        if (visible) visibleCount++;
+    });
+    
+    document.getElementById('resultsCount').innerHTML = `Showing <span class="font-medium text-gray-700">${visibleCount}</span> courses`;
+}
+
+function sortCourses(sortBy) {
+    const grid = document.getElementById('courseGrid');
+    const courses = Array.from(document.querySelectorAll('.course-card'));
+    
+    courses.sort((a, b) => {
+        if (sortBy === 'popular') return parseInt(b.dataset.popularity) - parseInt(a.dataset.popularity);
+        if (sortBy === 'name-asc') return a.dataset.name.localeCompare(b.dataset.name);
+        if (sortBy === 'name-desc') return b.dataset.name.localeCompare(a.dataset.name);
+        return 0;
+    });
+    
+    grid.innerHTML = '';
+    courses.forEach(course => grid.appendChild(course));
+}
+
+function clearFilters() {
+    currentCategory = 'all';
+    currentLevels = [];
+    searchQuery = '';
+    
+    document.querySelectorAll('.level-filter').forEach(el => {
+        el.classList.remove('active');
+    });
+    document.querySelector('.level-filter').classList.add('active');
+    
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.checked = false;
+    });
+    
+    document.getElementById('searchInput').value = '';
+    applyFilters();
+}
+
+// Modal functions
+function showCourseDetails(title, category) {
+    const modal = document.getElementById('courseModalOverlay');
+    const details = courseDetails[category] || courseDetails['ccna'];
+    
+    document.getElementById('modalCourseTitle').textContent = title;
+    document.getElementById('modalCategory').textContent = details.category;
+    document.getElementById('modalLevel').textContent = details.level;
+    document.getElementById('modalHours').textContent = details.hours;
+    document.getElementById('modalDescription').textContent = details.description;
+    
+    // Set objectives
+    const objectivesList = document.getElementById('modalObjectives');
+    objectivesList.innerHTML = '';
+    details.objectives.forEach(obj => {
+        const li = document.createElement('li');
+        li.className = 'flex items-start';
+        li.innerHTML = `
+            <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            ${obj}
+        `;
+        objectivesList.appendChild(li);
+    });
+    
+    // Set includes
+    const includesGrid = document.getElementById('modalIncludes');
+    includesGrid.innerHTML = '';
+    details.includes.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'flex items-center';
+        div.innerHTML = `
+            <svg class="w-4 h-4 text-[#0A2647] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            ${item}
+        `;
+        includesGrid.appendChild(div);
+    });
+    
+    // Set image
+    let imagePath = '';
+    switch(category) {
+        case 'ccna': imagePath = 'TSPI%20PICTURES/ccna.png'; break;
+        case 'network-plus': imagePath = 'TSPI%20PICTURES/network-plus.png'; break;
+        case 'tcpip': imagePath = 'TSPI%20PICTURES/tcp-ip.png'; break;
+        case 'security': imagePath = 'TSPI%20PICTURES/network-security.png'; break;
+        case 'wireless': imagePath = 'TSPI%20PICTURES/wireless.png'; break;
+        case 'ccnp': imagePath = 'TSPI%20PICTURES/ccnp-enterprise.png'; break;
+        case 'cyberops': imagePath = 'TSPI%20PICTURES/cyberops.png'; break;
+        default: imagePath = 'TSPI%20PICTURES/ccna.png';
+    }
+    
+    document.getElementById('modalCourseImage').style.backgroundImage = `url('${imagePath}')`;
+    modal.style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('courseModalOverlay').style.display = 'none';
+}
+
+function enrollCourse() {
+    alert('You have been enrolled in this course! Redirecting to learning dashboard...');
+    closeModal();
+    window.location.href = 'user_dashboard.html#myLearningSection';
+}
+
+// Popup System
+function showPopup(type) {
+    const overlay = document.getElementById('popupOverlay');
+    const title = document.getElementById('popupTitle');
+    const body = document.getElementById('popupBody');
+    
+    // Close profile dropdown if open
+    document.getElementById('profileDropdown')?.classList.add('hidden');
+
+    switch(type) {
+        case 'profile':
+            title.textContent = 'Profile Settings';
+            body.innerHTML = `
+                <div class="space-y-4">
+                    <p>Manage your profile information.</p>
+                    <div class="border-t border-gray-200 pt-4">
+                        <p class="font-semibold text-gray-800">Profile Details:</p>
+                        <ul class="mt-2 space-y-1 text-sm text-gray-600">
+                            <li>Name: Joanne Shiela Balahan</li>
+                            <li>Email: joanne.s@tspi.com.ph</li>
+                            <li>Employee ID: TSPI-2024-0123</li>
+                        </ul>
+                    </div>
+                    <div class="flex justify-end">
+                        <button onclick="hidePopup()" class="px-4 py-2 bg-[#0A2647] text-white rounded-md text-sm hover:bg-[#1d4b72]">Close</button>
+                    </div>
+                </div>`;
+            break;
+        case 'preferences':
+            title.textContent = 'Preferences';
+            body.innerHTML = `
+                <div class="space-y-4">
+                    <p>Customize your app preferences.</p>
+                    <div class="space-y-3">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-[#0A2647]">
+                            <span class="text-sm text-gray-700">Dark Mode</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-[#0A2647]">
+                            <span class="text-sm text-gray-700">Compact View</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-[#0A2647]" checked>
+                            <span class="text-sm text-gray-700">Auto-save</span>
+                        </label>
+                    </div>
+                    <div class="flex justify-end">
+                        <button onclick="hidePopup()" class="px-4 py-2 bg-[#0A2647] text-white rounded-md text-sm hover:bg-[#1d4b72]">Save</button>
+                    </div>
+                </div>`;
+            break;
+        case 'notifications':
+            title.textContent = 'Notifications';
+            body.innerHTML = `
+                <div class="space-y-4">
+                    <p>Configure your notification settings.</p>
+                    <div class="bg-gray-50 p-4 rounded-lg space-y-2">
+                        <p class="font-semibold text-gray-800 text-sm mb-2">Recent Notifications:</p>
+                        <p class="text-sm text-gray-600">• Your profile was viewed</p>
+                        <p class="text-sm text-gray-600">• New message received</p>
+                        <p class="text-sm text-gray-600">• System update available</p>
+                    </div>
+                    <div class="flex justify-end">
+                        <button onclick="hidePopup()" class="px-4 py-2 bg-[#0A2647] text-white rounded-md text-sm hover:bg-[#1d4b72]">Close</button>
+                    </div>
+                </div>`;
+            break;
+        case 'signout':
+            title.textContent = 'Sign Out';
+            body.innerHTML = `
+                <div class="text-center space-y-4">
+                    <div class="signout-modal-icon">
+                        <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-gray-800 font-semibold text-base">Ready to leave?</p>
+                        <p class="text-gray-500 text-sm mt-1">Your session will be ended.</p>
+                    </div>
+                    <div class="flex justify-center gap-3">
+                        <button onclick="hidePopup()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md text-sm hover:bg-gray-200">Stay</button>
+                        <button onclick="confirmSignOut()" class="px-4 py-2 bg-red-600 text-white rounded-md text-sm hover:bg-red-700">Sign Out</button>
+                    </div>
+                </div>`;
+            break;
+        case 'mobile':
+            title.textContent = 'Navigation';
+            body.innerHTML = `
+                <div class="space-y-1">
+                    <a href="user_dashboard.html" class="flex items-center gap-3 px-3 py-3 hover:bg-gray-50 rounded-lg text-gray-700 text-sm cursor-pointer">Dashboard</a>
+                    <a href="courses.html" class="flex items-center gap-3 px-3 py-3 hover:bg-gray-50 rounded-lg text-gray-700 text-sm cursor-pointer">Courses</a>
+                    <a href="assessments.html" class="flex items-center gap-3 px-3 py-3 hover:bg-gray-50 rounded-lg text-gray-700 text-sm cursor-pointer">Assessments</a>
+                    <a href="resources.html" class="flex items-center gap-3 px-3 py-3 hover:bg-gray-50 rounded-lg text-gray-700 text-sm cursor-pointer">Resources</a>
+                    <div class="border-t border-gray-100 my-2"></div>
+                    <div onclick="showPopup('signout')" class="flex items-center gap-3 px-3 py-3 hover:bg-red-50 rounded-lg text-red-600 cursor-pointer text-sm">Sign Out</div>
+                </div>`;
+            break;
+        case 'search':
+            title.textContent = 'Search';
+            body.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex items-center border border-gray-200 rounded-lg px-3 py-2">
+                        <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input type="text" placeholder="Search courses..." class="w-full outline-none text-sm">
+                    </div>
+                    <div class="border-t border-gray-100 pt-3">
+                        <p class="text-xs font-semibold text-gray-500 mb-2">Recent Searches</p>
+                        <p class="text-sm text-gray-600 mb-2">• CCNA</p>
+                        <p class="text-sm text-gray-600 mb-2">• Network+</p>
+                        <p class="text-sm text-gray-600">• CCNP</p>
+                    </div>
+                </div>`;
+            break;
+    }
+
+    overlay.style.display = 'block';
+}
+
+function hidePopup() {
+    document.getElementById('popupOverlay').style.display = 'none';
+}
+
+function confirmSignOut() {
+    hidePopup();
+    window.location.href = 'Front_Page.html';
+}
+
+function scrollToSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) section.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Close modal when clicking overlay
+document.getElementById('courseModalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+
+document.getElementById('popupOverlay').addEventListener('click', function(e) {
+    if (e.target === this) hidePopup();
+});
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    // Set initial counts
+    const totalCourses = document.querySelectorAll('.course-card').length;
+    document.getElementById('totalCount').textContent = totalCourses;
+    
+    // Set initial status
+    setStatus('online');
+});
+</script>
+</body>
+</html>
